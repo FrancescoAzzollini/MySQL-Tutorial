@@ -1,0 +1,172 @@
+#LIKE ed i suoi pattern sulle stringhe
+/*
+numero indefinito di caratteri e comincia con 'C%'
+numero indefinito di caratteri e finisce con '%C'
+numero indefinito di caratteri e contiene '$C$'
+caratteri fissi e comincia con 'C_'
+caratteri fissi e finisce con '_C'
+caratteri fissi e contiene '_C_'
+contiene stringa e inizia con uno '_C$'
+contiene stringa e finisce con uno '$C_'
+*/
+
+/*
+SELECT * FROM dipendenti 
+WHERE nome LIKE 'G%';
+*/
+
+#example
+
+/*
+SELECT * FROM dipendenti 
+WHERE nome LIKE 'G%';
+*/
+
+/*
+SELECT * FROM dipendenti 
+WHERE nome LIKE '________h';
+*/
+
+/*
+SELECT * FROM dipendenti 
+WHERE nome LIKE '%dama____';
+*/
+
+-- ----------------------------------------
+
+
+#Per alterare una tabella usa ALTER TABLE
+
+#Aggiungere colonna con ADD
+#ALTER TABLE rapporto_clienti ADD prova varchar(50) not null;
+
+#Cambiare posizione a colonna con MODIFY
+#ALTER TABLE rapporto_clienti MODIFY prova varchar(50) AFTER id_rapporto;
+
+#Per aggiungere un constraint
+#ALTER TABLE rapporto_clienti ADD UNIQUE (prova)
+
+#Modifica datatype
+#ALTER TABLE rapporto_clienti MODIFY prova int;
+
+#Rimuovere colonna con DROP COLUMN
+#ALTER TABLE rapporto_clienti DROP COLUMN prova;
+
+#Rinomina tabella con RENAME
+#ALTER TABLE rapporto_clienti RENAME edamechevoi; 
+
+#Rinomina colonna
+#ALTER TABLE rapporto_clienti CHANGE prova nuovo_nome int;
+
+#Risparmia tempo creando un alias per una tabella con AS
+#nome_tabella AS nome_alias
+#questo puo essere fatto anche nel mezzo di un'altra funzione
+
+/*
+SELECT d.id_dipendente, d.nome, u.nome_ufficio
+FROM dipendenti AS d #tabella di sinistra
+INNER JOIN uffici AS u /* tabella di destra */ON d.id_ufficio = u.id_ufficio;
+*/
+
+#Per formattare le date possiamo usare la funzione DATE_FORMAT()
+#Per facilitare le cose dopo, possiamo rinominare (al front end) la colonna come prima con un alias 
+#SELECT nome, DATE_FORMAT(data_assunzione, '%e %M, %Y') AS data_assunzione FROM dipendenti;
+
+-- ----------------------------------------
+
+
+#Puoi usare GROUP BY per raggruppare righe che contengono campi ripetuti
+#Usato, per esempio, insieme alla funzione COUNT puo dirci quante righe ci sono per ogni campo ripetuto
+#Per imporre condizioni, HAVING e simile a WHERE, ma agisce su un aggregato di righe
+
+/*
+SELECT x.nome_ufficio , COUNT(y.id_dipendente) AS totale_dipendenti
+FROM uffici AS x
+LEFT JOIN dipendenti AS y
+ON x.id_ufficio = y.id_ufficio
+GROUP BY x.nome_ufficio
+HAVING totale_dipendenti = 2;
+*/
+
+-- ----------------------------------------
+
+
+#Usa VIEW per salvare una query precedente e chiamarla a piacimento
+#esempio
+/*
+CREATE VIEW prova AS
+SELECT x.id_dipendente, x.nome, y.nome_ufficio
+FROM dipendenti AS x
+INNER JOIN uffici AS y ON x.id_ufficio = y.id_ufficio;
+*/
+#Adesso invece che scrivere tutto quelo basta scrivere
+#SELECT * FROM prova
+
+#Per sostituire una VIEW esistente con un altro statement si puo scrivere
+/*
+CREATE OR REPLACE VIEW prova AS
+SELECT * FROM dipendenti;
+*/
+
+#Per eliminare una VIEW usa
+#DROP VIEW prova;
+
+-- ----------------------------------------
+
+
+#Lavorare con date e tempo
+/*
+CREATE TABLE IF NOT EXISTS date_tempo(
+id int(4) not null PRIMARY KEY AUTO_INCREMENT,
+nome varchar(50) not null UNIQUE,
+data_nascita date not null,
+data_inserimento datetime DEFAULT CURRENT_TIMESTAMP, #per inserire il tempo attuale come default
+data_modifica timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 
+#per mostrare il tempo dell'ultima modifica
+);
+
+#ON UPDATE aggiorna un campo della tabella ogni volta che questa e sottoposta ad un UPDATE
+
+INSERT INTO date_tempo (nome, data_nascita, data_inserimento)
+VALUES ('Luca', '1995-06-06', NOW());
+*/
+
+-- ----------------------------------------
+
+
+#Clonare Tabelle
+
+#Copiare struttura e dati, inclusi i constraint
+/*
+CREATE TABLE nuova_tabella LIKE tabella_originale;
+INSERT INTO nuova_tabella SELECT * FROM tabella_originale;
+*/
+
+#Copiare solo dati, esclusi i constraint
+#CREATE TABLE nuova_tabella SELECT * FROM tabella_originale;
+
+-- ----------------------------------------
+
+
+#Tabelle temporanee, si cancellano una volta che termina la sessione (con disconnect)
+
+#Creare tabella temporanea
+/*
+CREATE TEMPORARY TABLE temp1(
+id int PRIMARY KEY,
+nome varchar(50) not null,
+age int not null,
+total_score int not null
+);
+*/
+
+#Eliminare tabella temporanea
+#DROP TEMPORARY TABLE temp1;
+
+
+
+
+
+
+
+

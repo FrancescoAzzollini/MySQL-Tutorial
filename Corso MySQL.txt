@@ -1,0 +1,257 @@
+/*
+per creare un database usa:
+CREATE DATABASE nome_database;
+*/
+
+CREATE TABLE IF NOT EXISTS rapporto_clienti(
+id_rapporto int not null,
+id_cliente int not null,
+id_dipendente int not null,
+PRIMARY KEY(id_rapporto)
+);
+
+
+CREATE TABLE IF NOT EXISTS uffici(
+id_ufficio int not null,
+nome_ufficio int not null,
+PRIMARY KEY(id_ufficio)
+);
+
+
+CREATE TABLE IF NOT EXISTS dipendenti(
+id_dipendente int UNSIGNED  not null AUTO_INCREMENT REFERENCES rapporto_clienti(id_dipendente),
+/*
+UNSIGNED e REFERENCES serve a collegare il campo ad un altra tabella 
+AUTO_INCREMENT fa' si che il campo aumenti di uno per ogni elemento inserito
+*/
+nome varchar(255) not null,
+cognome varchar(255) not null,
+data_assunzione date /* yyyy/mm/dd */not /*this is an inline comment*/null,
+stipendio decimal not null check(stipendio >= 1200 AND stipendio <= 5000),
+telefono varchar(10) not null unique, -- rende univoca la variabile i.e. evita ripetizioni
+mansione varchar(255) not null default 'impiegato',
+/*
+se non aggiungiamo nulla verra
+inserito impiegato di default
+*/
+PRIMARY KEY(id_dipendente) #rende univoca una variabile essenziale 
+);
+
+
+CREATE TABLE IF NOT EXISTS clienti(
+id_cliente int UNSIGNED not null AUTO_INCREMENT REFERENCES rapporto_clienti(id_cliente),
+denominazione varchar(255) not null,
+p_iva varchar(16) not null,
+indirizzo varchar(255) not null,
+citta varchar(255) not null,
+telefono varchar(10) not null unique,
+PRIMARY KEY(id_cliente)
+);
+
+
+#DROP TABLE clienti, dipendenti, rapporto_clienti
+#;
+
+
+/*
+#id_cliente aumenta in automatico
+INSERT INTO clienti (denominazione, p_iva, indirizzo, citta, telefono)
+VALUES 
+("Rossi Giardinaggio", "9045233456", "Viaffanculo", "Tardo", "1134603452"),
+("Baracca fai da te", "9045234467", "Via del Maiale", "Genova", "1134607825"),
+("Panificio Fasciano", "9045236659", "Via del Dio", "Cane", "1134602311"),
+("Compro oro", "9045238942", "Via del Popolo", "Poggiofranco", "1134614563");
+*/
+
+
+
+
+#Usa SELECT per selezionare dati da vedere
+
+/*
+SELECT lista_colonne FROM nome_tabella;
+*/
+
+# * vuol dire tutto
+#SELECT * from clienti
+
+-- -----------------------------------------------------------
+
+
+#Aggiungi condizioni con WHERE
+
+/*
+SELECT lista_colonne FROM nome_tabella WHERE condizione;
+*/
+
+#SELECT * from clienti WHERE id_cliente = 1; 
+
+/*
+=  uguale
+>  maggiore
+<  minore
+!= diverso
+>= maggiore o uguale
+<= minore o uguale
+*/
+
+#Per condizioni piu specifiche usa AND o OR a seconda delle tue necessita
+
+/*
+SELECT lista_colonne
+FROM nome_tabella 
+WHERE condizione1 AND|OR condizione2 AND|OR ... ;
+*/
+
+/*
+SELECT *
+FROM dipendenti
+WHERE stipendio > 1600 AND mansione = 'impiegato';
+*/
+
+#Per escludere dati usa WHERE NOT e AND|OR NOT nelle condizioni addizionali
+
+/*
+SELECT lista_colonne
+FROM nome_tabella 
+WHERE NOT condizione1 AND|OR NOT condizione2 AND|OR NOT ... ;
+*/
+
+/*
+SELECT *
+FROM dipendenti
+WHERE NOT stipendio > 1600 OR NOT mansione = 'impiegato';
+*/
+
+#Per macrocondizioni possiamo unire piu coindizioni tramite parentesi
+
+/*
+SELECT lista_colonne
+FROM nome_tabella 
+WHERE (condizione1 AND condizione2) OR (condizione3 AND condizione4) OR ... ;
+*/
+
+/*
+SELECT *
+FROM dipendenti
+WHERE (stipendio > 1600 AND mansione = 'impiegato') 
+OR (stipendio > 1700 AND mansione = 'fallito');
+*/
+
+#Condizioni con IN e BETWEEN (nota che per escludere valori puoi usare NOT IN e NOT BETWEEN)
+
+/*
+SELECT lista_colonne
+FROM nome_tabella 
+WHERE column_name IN (value1, value2, ...);
+*/
+
+/*
+SELECT lista_colonne
+FROM nome_tabella 
+WHERE column_name BEWTEEN min_value AND max_value;
+*/
+
+/*
+SELECT *
+FROM dipendenti
+WHERE mansione IN ('impiegato', 'fallito');
+*/
+
+-- -----------------------------------------------------------
+
+
+#Ordinare colonne in ordine ASC o DESC con ORDER BY
+
+
+/*
+SELECT column_list
+FROM table_name
+ORDER BY column_name ASC|DESC;
+*/
+
+/*
+#Per stabilire un limite usa LIMIT limit_value
+#Posso anche usare LIMIT offset, limit_value
+#dove limi_value = valore limite ed offset = numero di righe saltate
+
+SELECT *
+FROM dipendenti
+ORDER BY nome, cognome DESC LIMIT 3;
+
+#Il campo leader viene prima:
+#in questo caso se due persone hanno lo stesso nome apparira prima quella con cognome piu in alto
+#a livello alfabetico
+*/
+
+/*
+#Per estrarre l'ultimo dipendent aggiunto
+SELECT * FROM dipendenti ORDER BY id_dipendente DESC LIMIT 1;
+*/
+
+-- -----------------------------------------------------------
+
+
+#DISTINCT puo essere usato nel caso vi siano valori ripetuti
+#Lista tutte le voci diverse da una colonna
+#SELECT DISTINCT colonne FROM tabella;
+
+#Per sapere il numero di voci diverse possiamo usare COUNT
+#SELECT COUNT(DISTINCT colonne) FROM tabella;
+
+#SELECT COUNT(DISTINCT citta) from clienti;
+#SELECT DISTINCT citta from clienti;
+
+-- -----------------------------------------------------------
+
+
+#usa UPDATE per aggiornare tabelle
+/*
+UPDATE tabella
+SET colonna1 = valore 1, colonna2 = valore2, ...
+WHERE condizione;
+*/
+
+#RICORDA DI AGGIUNGERE WHERE O RISCHI DI PERDERE TUTTI I DATI!
+
+/*
+UPDATE clienti
+SET indirizzo = 'Corso della Vittoria'
+WHERE id_cliente = 1;
+*/
+
+-- -----------------------------------------------------------
+
+
+#Usa DELETE per cancellare dati da una tabella
+#DELETE FROM tabella WHERE condizione;
+#l'indice (e.g. id_dipendente) continuera ad aumentare comunque
+
+#RICORDA DI AGGIUNGERE WHERE O RISCHI DI PERDERE TUTTI I DATI!
+
+-- -----------------------------------------------------------
+
+
+#Usa TRUNCATE TABLE per pulire tabella (elimina tutti gli elementi)
+#Stavolta gli indici (e.g. id_dipendente) ricominceranno ad 1
+#TRUNCATE TABLE tabella;
+
+#TRUNCATE TABLE dipendenti;
+
+#Qui vado a reinserire alcuni elementi
+/*
+INSERT INTO dipendenti (nome, cognome, data_assunzione, stipendio, telefono, mansione)
+VALUES
+('Ghiotto', 'Dicazzi', '2020-12-18', 1800, '1567312334', 'magazziniere'),
+('Daniele', 'Troie', '2021-11-10', 1700, '1567300944', 'cartolaio'),
+('Sara', 'Nocazzi', '2021-06-17', 1750, '1567311332', 'fallito'),
+('Gabe', 'Itch', '2021-07-23', 1500, '1567312389', 'impiegato'),
+('Gianni', 'Dioporco', '2020-06-22', 1800, '1567314387', 'impiegato'),
+('Anna', 'Damacrop', '2022-01-09', 1550, '1340811332', 'impiegato'),
+('Rosa', 'Lacacca', '2022-10-25', 1600, '1567312674', 'magazziniere'),
+('Carlo', 'Teodorico', '2022-11-07', 1650, '1348931234', 'impiegato')
+;
+*/
+
+
+

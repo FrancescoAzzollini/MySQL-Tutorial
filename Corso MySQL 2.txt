@@ -1,0 +1,85 @@
+
+CREATE TABLE IF NOT EXISTS rapporto_clienti(
+id_rapporto int not null,
+id_cliente int not null,
+id_dipendente int not null,
+PRIMARY KEY(id_rapporto)
+);
+
+
+CREATE TABLE IF NOT EXISTS uffici(
+id_ufficio int not null AUTO_INCREMENT,
+nome_ufficio varchar(255) not null,
+PRIMARY KEY(id_ufficio)
+);
+
+
+CREATE TABLE IF NOT EXISTS dipendenti(
+id_dipendente int UNSIGNED not null AUTO_INCREMENT REFERENCES rapporto_clienti(id_dipendente),
+nome varchar(255) not null,
+data_assunzione date not null,
+stipendio decimal not null check(stipendio >= 1200 AND stipendio <= 5000),
+telefono varchar(10) not null unique,
+id_ufficio int UNSIGNED REFERENCES uffici(id_ufficio),
+PRIMARY KEY(id_dipendente) 
+);
+
+
+CREATE TABLE IF NOT EXISTS clienti(
+id_cliente int UNSIGNED not null AUTO_INCREMENT REFERENCES rapporto_clienti(id_cliente),
+denominazione varchar(255) not null,
+p_iva varchar(16) not null,
+indirizzo varchar(255) not null,
+citta varchar(255) not null,
+telefono varchar(10) not null unique,
+PRIMARY KEY(id_cliente)
+);
+
+#DROP TABLE dipendenti;
+
+/*
+INSERT INTO uffici (nome_ufficio)
+VALUES
+('Risorse Umane'), 
+('Amministrazione'),
+('Servizio Clienti'), 
+('Vendite');
+*/
+
+/*
+INSERT INTO dipendenti (nome, data_assunzione, stipendio, telefono, id_ufficio)
+VALUES
+('Ghiotto Dicazzi', '2020-12-18', 1800, '1567312334', 1),
+('Daniele Troie', '2021-11-10', 1700, '1567300944', 3),
+('Sara Nocazzi', '2021-06-17', 1750, '1567311332', 4),
+('Gabe Itch', '2021-07-23', 1500, '1567312389', 2),
+('Gianni Dioporco', '2020-06-22', 1800, '1567314387', 2),
+('Anna Damacrop', '2022-01-09', 1550, '1340811332', 1),
+('Rosa Lacacca', '2022-10-25', 1600, '1567312674', 1),
+('Carlo Teodorico', '2022-11-07', 1650, '1348931234', NULL);
+*/
+
+
+#Unisci due tabelle con INNER JOIN
+#INNER JOIN = intersezione tra due tabelle
+/*
+SELECT campi 
+FROM tabella1
+INNER JOIN tabella2 ON condizione;
+*/
+
+
+SELECT dipendenti.id_dipendente, dipendenti.nome, uffici.nome_ufficio
+FROM dipendenti #tabella di sinistra
+INNER JOIN uffici /* tabella di destra */ON dipendenti.id_ufficio = uffici.id_ufficio;
+
+
+#Il risultato e una tabella con id_dipendente, nome e nome_ufficio come colonne
+
+/*
+INNER JOIN = intersezione fra le due tabelle
+LEFT JOIN = tutti i valori della tabella di sinistra 
+RIGHT JOIN = tutti i valori della tabella di destra
+FULL JOIN = unione delle due tabelle --> non supportato su MySQL, sostituito da UNION 
+*/
+

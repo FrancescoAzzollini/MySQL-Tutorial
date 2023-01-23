@@ -1,0 +1,7 @@
+#Useful bits from exercises
+
+#To subtract an amount of time (e.g. 18 years) from current date use
+
+date_sub(current_date(), 18 year)
+
+#you can add dates with date_add
